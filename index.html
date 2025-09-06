@@ -1,0 +1,307 @@
+<!doctype html>
+
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Joyeux Anniversaire Amel 🎉</title>
+  <style>
+    /* ==========================
+       صفحة تهنئة احترافية - تصميم متجاوب
+       مؤثرات: كونفيتي، كتابة آلية، قلوب متحركة
+       مطور: Yacine chettout
+       ========================== */:root{
+  --bg1: #0f172a; /* dark navy */
+  --accent: #ff4d85; /* pink */
+  --accent2: #ffd166; /* gold */
+  --glass: rgba(255,255,255,0.06);
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+}
+
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(1200px 800px at 10% 10%, #0b1220 0%, var(--bg1) 30%), linear-gradient(180deg, rgba(15,23,42,0.25), rgba(0,0,0,0.35));
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  padding:30px;
+}
+
+.card{
+  width:min(980px, 96vw);
+  border-radius:18px;
+  padding:38px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+  position:relative;
+  backdrop-filter: blur(6px) saturate(110%);
+  overflow:hidden;
+}
+
+/* header */
+.logo{
+  position:absolute; top:18px; right:20px; font-size:13px; color:var(--muted);
+}
+
+h1.main{
+  font-size:44px;
+  margin:10px 0 6px 0;
+  letter-spacing:1px;
+  line-height:1.02;
+  text-shadow: 0 6px 28px rgba(255,77,133,0.08);
+  display:flex; gap:12px; align-items:center;
+}
+
+.emoji{
+  display:inline-block; transform:translateY(-2px);
+  font-size:38px;
+}
+
+p.lead{
+  margin:0 0 18px 0;
+  color:var(--muted);
+  font-size:18px;
+}
+
+/* typewriter message box */
+.message-box{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:12px;
+  padding:22px;
+  box-shadow: inset 0 -8px 20px rgba(0,0,0,0.3);
+  min-height:120px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:18px;
+  position:relative;
+}
+
+.typewriter{
+  font-family: 'Courier New', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  font-size:20px; color:var(--text);
+  max-width:90%; text-align:center; line-height:1.5;
+  white-space:pre-wrap;
+}
+
+/* footer credits */
+.footer{
+  margin-top:10px; display:flex; gap:14px; justify-content:space-between; align-items:center; color:var(--muted); font-size:14px;
+}
+
+.button{
+  margin-left:auto; display:inline-flex; gap:8px; align-items:center; background:linear-gradient(90deg,var(--accent), #ff7aa2); border:none; color:white; padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600;
+  box-shadow: 0 8px 20px rgba(255,77,133,0.12);
+}
+
+/* animated hearts */
+.hearts{ position:absolute; inset:0; pointer-events:none; }
+
+/* responsive tweaks */
+@media (max-width:620px){
+  h1.main{ font-size:28px; }
+  .message-box{ padding:14px; min-height:110px; }
+  .typewriter{ font-size:16px; }
+}
+
+/* small detail: glowing underline */
+.glow-underline{ display:inline-block; position:relative; }
+.glow-underline:after{ content:''; position:absolute; left:0; right:0; bottom:-6px; height:6px; border-radius:6px; background:linear-gradient(90deg,var(--accent),var(--accent2)); filter:blur(8px); opacity:0.55; }
+
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-label="Carte d'anniversaire pour Amel">
+    <div class="logo">Made with ♥</div><h1 class="main"><span class="emoji">🎉</span><span class="glow-underline">joyeux anniversaire amel❤️🎉</span></h1>
+<p class="lead">A surprise just for you — une petite attention pleine d'amour ✨</p>
+
+<div class="message-box" id="msgbox">
+  <div class="typewriter" id="typewriter"></div>
+</div>
+
+<div style="display:flex; gap:12px; align-items:center;">
+  <button class="button" id="replay">Replay ✨</button>
+  <button class="button" id="musicToggle">Play melody ♪</button>
+</div>
+
+<div class="footer">
+  <div id="bottomLeft">Yacine chettout هو مطور هذا الكود</div>
+  <div style="font-weight:700;">you are the best❤️</div>
+</div>
+
+<!-- animated hearts / confetti canvas -->
+<canvas id="confettiCanvas" class="hearts"></canvas>
+
+  </div>  <script>
+    /************************************************
+     * رسالة المستخدم المطلوبة بالضبط
+     * يجب أن تظهر:  
+     * "je te souhaite tout le bonheur de monde et de réussite dans t'a vie nchlh"
+     ************************************************/
+
+    const MESSAGE = "je te souhaite tout le bonheur de monde et de réussite dans t'a vie nchlh";
+
+    // Typewriter effect (with patience — long message looks elegant)
+    const typeEl = document.getElementById('typewriter');
+    const replayBtn = document.getElementById('replay');
+    const musicToggle = document.getElementById('musicToggle');
+
+    let current = 0;
+    let typingInterval = null;
+
+    function startTypewriter(){
+      clearInterval(typingInterval);
+      typeEl.textContent = '';
+      current = 0;
+      typingInterval = setInterval(()=>{
+        if(current < MESSAGE.length){
+          typeEl.textContent += MESSAGE[current];
+          // small random pause for punctuation
+          current++;
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 60);
+    }
+
+    replayBtn.addEventListener('click', ()=>{
+      // restart confetti + typing
+      startConfetti();
+      startTypewriter();
+    });
+
+    // ------- Confetti / hearts particle system -------
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = 0, H = 0;
+
+    function resize(){
+      W = canvas.width = innerWidth;
+      H = canvas.height = innerHeight;
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    // particles
+    const particles = [];
+    const colors = ['#ff4d85', '#ffd166', '#6ee7b7', '#7dd3fc'];
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function spawnParticle(x,y){
+      const size = rand(8,20);
+      const life = rand(2000,4200);
+      particles.push({
+        x, y,
+        vx: rand(-1.5,1.5),
+        vy: rand(-5,-1.5),
+        size, life, t:0,
+        col: colors[Math.floor(Math.random()*colors.length)],
+        shape: Math.random()<0.6 ? 'circle' : 'heart'
+      });
+    }
+
+    function drawHeart(x,y,s){
+      ctx.save(); ctx.translate(x,y); ctx.scale(s/20,s/20);
+      ctx.beginPath();
+      ctx.moveTo(0, -5);
+      ctx.bezierCurveTo(12, -35, 60, -25, 0, 40);
+      ctx.bezierCurveTo(-60, -25, -12, -35, 0, -5);
+      ctx.closePath();
+      ctx.fill(); ctx.restore();
+    }
+
+    let confettiTimer = null;
+
+    function startConfetti(){
+      // burst from top-center
+      const cx = W/2; const cy = H*0.35;
+      for(let i=0;i<60;i++) spawnParticle(cx + rand(-150,150), cy + rand(-60,60));
+      // optional repeat small bursts
+      if(confettiTimer) clearInterval(confettiTimer);
+      confettiTimer = setInterval(()=>{
+        for(let i=0;i<18;i++) spawnParticle(rand(80,W-80), H - 20);
+      }, 1100);
+    }
+
+    function step(ts){
+      ctx.clearRect(0,0,W,H);
+      // background soft glow
+      ctx.fillStyle = 'rgba(255,120,180,0.02)';
+      ctx.fillRect(0,0,W,H);
+
+      const now = performance.now();
+      for(let i = particles.length-1; i>=0; i--){
+        const p = particles[i];
+        p.t += 16;
+        p.vy += 0.06; // gravity
+        p.x += p.vx * (1 + p.t/1200);
+        p.y += p.vy * (1 + p.t/1200);
+        p.life -= 16;
+
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life/3000));
+        ctx.fillStyle = p.col;
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+        if(p.shape === 'circle'){
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size/2, 0, Math.PI*2); ctx.fill();
+        } else {
+          drawHeart(p.x, p.y, p.size);
+        }
+
+        if(p.life <= 0 || p.y > H + 50) particles.splice(i,1);
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+
+    // ------- small melody using WebAudio API -------
+    let audioCtx = null;
+    let isPlaying = false;
+
+    function playMelody(){
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 happy arpeggio
+      const dur = 0.18;
+      const master = audioCtx.createGain(); master.gain.value = 0.12; master.connect(audioCtx.destination);
+      notes.forEach((f,i)=>{
+        const o = audioCtx.createOscillator();
+        o.type = 'sine'; o.frequency.value = f;
+        const g = audioCtx.createGain(); g.gain.value = 0;
+        o.connect(g); g.connect(master);
+        o.start(now + i*dur);
+        g.gain.setValueAtTime(0.0001, now + i*dur);
+        g.gain.exponentialRampToValueAtTime(1, now + i*dur + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + i*dur + dur);
+        o.stop(now + i*dur + dur + 0.02);
+      });
+    }
+
+    musicToggle.addEventListener('click', ()=>{
+      if(!isPlaying){
+        playMelody();
+        isPlaying = true; musicToggle.textContent = 'Melody played ✓';
+      } else {
+        // quick visual feedback
+        playMelody();
+      }
+    });
+
+    // auto-start the show
+    window.addEventListener('load', ()=>{
+      startConfetti();
+      startTypewriter();
+    });
+
+    // accessibility: allow keyboard to replay
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'r') { startConfetti(); startTypewriter(); } });
+
+  </script></body>
+  </html>
