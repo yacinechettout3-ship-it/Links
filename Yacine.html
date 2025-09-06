@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise pour Amel</title>
+    <style>
+        body {
+            background-color: #f7e1ff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .content {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 2s ease-in-out;
+            max-width: 90%;
+            z-index: 2;
+        }
+
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #4b0082;
+            font-size: 1.2em;
+        }
+
+        #surpriseBtn {
+            background-color: #ff1493;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.4);
+        }
+
+        #surpriseBtn:hover {
+            background-color: #ff69b4;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            color: #888;
+            font-size: 0.9em;
+            z-index: 2;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .confetti {
+            position: absolute;
+            opacity: 0;
+            animation: fall linear forwards;
+        }
+
+        .confetti.circle { border-radius: 50%; }
+        .confetti.triangle { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 10px solid; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(1080deg); opacity: 1; }
+        }
+
+        /* الألعاب النارية */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h1>joyeux anniversaire amel❤️🎉</h1>
+        <p>je te souhaite tout le bonheur de monde et de réussite dans t'a vie nchlh</p>
+        <button id="surpriseBtn">اضغط للمفاجأة</button>
+    </div>
+
+    <div class="footer">
+        <p>Developed by Yacine chettout</p>
+        <p>You are the best❤️</p>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const surpriseBtn = document.getElementById('surpriseBtn');
+            const colors = ['#ff69b4', '#ff1493', '#ffa500', '#ffd700', '#adff2f', '#00ced1', '#8a2be2'];
+            const shapes = ['circle', 'square', 'triangle'];
+
+            // الكونفيتي يسقط باستمرار
+            setInterval(() => {
+                createConfetti();
+            }, 200);
+
+            function createConfetti() {
+                const confetti = document.createElement('div');
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                confetti.classList.add('confetti', shape);
+                
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                if (shape === 'triangle') {
+                    confetti.style.borderBottomColor = color;
+                } else {
+                    confetti.style.backgroundColor = color;
+                }
+
+                confetti.style.left = `${Math.random() * 100}vw`;
+                
+                const size = Math.random() * 10 + 5;
+                if (shape !== 'triangle') {
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                }
+                
+                const duration = Math.random() * 3 + 4;
+                confetti.style.animationDuration = `${duration}s`;
+
+                document.body.appendChild(confetti);
+
+                confetti.addEventListener('animationend', () => {
+                    confetti.remove();
+                });
+            }
+
+            // ألعاب نارية
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            resizeCanvas();
+
+            window.addEventListener('resize', resizeCanvas);
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            let particles = [];
+
+            function createFirework(x, y) {
+                const count = 100;
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        angle: Math.random() * 2 * Math.PI,
+                        speed: Math.random() * 5 + 2,
+                        radius: Math.random() * 2 + 1,
+                        life: 100,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+            }
+
+            function animateFireworks() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed + 1; // جاذبية خفيفة
+                    p.life--;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                });
+                requestAnimationFrame(animateFireworks);
+            }
+
+            animateFireworks();
+
+            surpriseBtn.addEventListener('click', () => {
+                createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+                createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+                createFirework(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+            });
+        });
+    </script>
+</body>
+  </html>
